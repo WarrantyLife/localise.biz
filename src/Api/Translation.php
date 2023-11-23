@@ -98,4 +98,33 @@ class Translation extends HttpApi
 
         return $this->hydrator->hydrate($response, TranslationDeleted::class);
     }
+
+    /**
+     * Flag translation
+     * {@link https://localise.biz/api/docs/translations/flagtranslation}.
+     *
+     * @param string $projectKey
+     * @param string $id
+     * @param string $locale
+     * @param string $flag
+     * @return TranslationModel|ResponseInterface
+     * @throws Exception
+     */
+    public function flag(string $projectKey, string $id, string $locale, string $flag)
+    {
+        $param = [
+            'flag' => $flag,
+        ];
+
+        $response = $this->httpPost(sprintf('/api/translations/%s/%s/flag?key=%s', $id, $locale, $projectKey), $param);
+        if (!$this->hydrator) {
+            return $response;
+        }
+
+        if ($response->getStatusCode() >= 400) {
+            $this->handleErrors($response);
+        }
+
+        return $this->hydrator->hydrate($response, TranslationModel::class);
+    }
 }
